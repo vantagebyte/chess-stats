@@ -47,17 +47,28 @@ def parse_game(game, username):
         me = game['white']
         opponent = game['black']
     else:
-        my_colour = 'black' 
+        my_colour = 'black'
         me = game['black']
         opponent = game['white']
+
     if me['result'] == 'win':
-        my_result = 'win' 
+        my_result = 'win'
     elif me['result'] in DRAW_RESULTS:
         my_result = 'draw'
     else:
-        my_result = 'loss'    
-    print(me['rating'])
-    print(my_result)
+        my_result = 'loss'
+
+    opening = game.get('eco','').split('/')[-1].replace('-',' ')
+    return Game(
+        url=game['url'],
+        time_class=game['time_class'],
+        end_time=game['end_time'],
+        my_colour=my_colour,
+        my_result=my_result,
+        my_rating=me['rating'],
+        opponent_rating=opponent['rating'],
+        opening=opening
+    )
 
 username = 'Voolfenborg'
 archives = get_archives(username)
@@ -73,4 +84,4 @@ print(blitz_count)
 
 
 print(games[0]['eco'])
-parse_game(games[0],username)
+print(parse_game(games[0],username))
