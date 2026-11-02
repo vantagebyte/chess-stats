@@ -1,6 +1,20 @@
 import requests
+from dataclasses import dataclass
 
 HEADERS = {'User-Agent': 'chess-stats/1.0 (github.com/vantagebyte)'}
+DRAW_RESULTS = ['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient']
+
+@dataclass
+class Game:
+    url: str
+    time_class: str
+    my_colour: str
+    my_rating: int
+    opponent_rating: int
+    my_result: str
+    end_time: int
+    opening: str
+
 
 def get_archives(username):
 
@@ -27,6 +41,23 @@ def get_games(month_url):
         print(f'Error: {response.status_code}')
         return []
 
+def parse_game(game, username):
+    if game['white']['username'].lower() == username.lower():
+        my_colour = 'white'
+        me = game['white']
+        opponent = game['black']
+    else:
+        my_colour = 'black' 
+        me = game['black']
+        opponent = game['white']
+    if me['result'] == 'win':
+        my_result = 'win' 
+    elif me['result'] in DRAW_RESULTS:
+        my_result = 'draw'
+    else:
+        my_result = 'loss'    
+    print(me['rating'])
+    print(my_result)
 
 username = 'Voolfenborg'
 archives = get_archives(username)
@@ -41,3 +72,5 @@ for game in games:
 print(blitz_count)
 
 
+print(games[0]['eco'])
+parse_game(games[0],username)
