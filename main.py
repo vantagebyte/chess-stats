@@ -1,12 +1,12 @@
 import requests
 
+HEADERS = {'User-Agent': 'chess-stats/1.0 (github.com/vantagebyte)'}
+
 def get_archives(username):
 
     url = f'https://api.chess.com/pub/player/{username}/games/archives'
 
-    headers = {'User-Agent': 'chess-stats/1.0 (github.com/vantagebyte)'}
-
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=HEADERS)
 
     if response.status_code == 200:
         data = response.json()
@@ -16,9 +16,28 @@ def get_archives(username):
         print(f'Error: {response.status_code}')
         return []
 
+def get_games(month_url):
+
+    response = requests.get(month_url, headers=HEADERS)
+    if response.status_code == 200:
+        data = response.json()
+        games = data['games']
+        return games
+    else:
+        print(f'Error: {response.status_code}')
+        return []
+
+
 username = 'Voolfenborg'
 archives = get_archives(username)
-for month_url in archives:
-    print(month_url)
+last_month = archives[-2]
+games = get_games(last_month)
+print(len(games))
+
+blitz_count = 0
+for game in games:
+    if game['time_class'] == 'blitz':
+        blitz_count += 1
+print(blitz_count)
 
 
