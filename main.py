@@ -12,8 +12,6 @@ def get_archives(username):
         data = response.json()
         archives = data['archives']
         return archives
-    for month_url in archives:
-        print(month_url)
     else:
         print(f'Error: {response.status_code}')
         return []
