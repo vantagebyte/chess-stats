@@ -14,6 +14,16 @@ class Game:
     end_time: int
     opening: str
 
+def clean_opening(name):
+    words = name.split()
+    kept = []
+    for word in words:
+        if word[0].isdigit() and '.' in word:
+            break
+        else:
+            kept.append(word)
+    return ' '.join(kept)
+
 def parse_game(game, username):
     if game['white']['username'].lower() == username.lower():
         my_colour = 'white'
@@ -31,7 +41,7 @@ def parse_game(game, username):
     else:
         my_result = 'loss'
 
-    opening = game.get('eco','').split('/')[-1].replace('-',' ')
+    opening = clean_opening(game.get('eco','').split('/')[-1].replace('-',' '))
     return Game(
         url=game['url'],
         time_class=game['time_class'],

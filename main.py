@@ -5,7 +5,7 @@ from stats import results_summary, results_by_colour, results_by_time_class, res
 import time
 
 username = 'Voolfenborg'
-archives = get_archives(username)
+# archives = get_archives(username)
 
 conn = init_db()
 # for month_url in archives:
