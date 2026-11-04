@@ -1,7 +1,7 @@
 from models import parse_game
 from api import get_archives, get_games
 from db import init_db, save_game
-from stats import results_summary, results_by_colour, results_by_time_class
+from stats import results_summary, results_by_colour, results_by_time_class, results_by_time_control, format_time_control
 import time
 
 username = 'Voolfenborg'
@@ -20,6 +20,7 @@ rows = results_summary(conn)
 total = count[0]
 for result, n in rows:
     print(f'{result}: {n} ({n / total * 100:.1f}%)')
+
 print('\nBy colour:')
 for colour, total, wins, losses, draws in results_by_colour(conn):
     print(f'{colour}: {total} games | {wins / total * 100:.1f}% W | {losses / total * 100:.1f}% L | {draws / total * 100:.1f}% D')
@@ -27,3 +28,7 @@ for colour, total, wins, losses, draws in results_by_colour(conn):
 print('\nBy time class:')
 for time_class, total, wins, losses, draws in results_by_time_class(conn): 
     print(f'{time_class}: {total} games | {wins / total * 100:.1f}% W | {losses / total * 100:.1f}% L | {draws / total * 100:.1f}% D')
+
+print('\nBY time control:')
+for time_class, time_control, total, wins, losses, draws in results_by_time_control(conn):
+    print(f'{time_class} {format_time_control(time_control)}: {total} games | {wins / total * 100:.1f}% W | {losses / total * 100:.1f}% L | {draws / total * 100:.1f}% D')
