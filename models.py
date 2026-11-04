@@ -6,6 +6,7 @@ DRAW_RESULTS = ['agreed', 'repetition', 'stalemate', 'insufficient', '50move', '
 class Game:
     url: str
     time_class: str
+    time_control: str
     my_colour: str
     my_rating: int
     opponent_rating: int
@@ -34,6 +35,7 @@ def parse_game(game, username):
     return Game(
         url=game['url'],
         time_class=game['time_class'],
+        time_control=game['time_control'],
         end_time=game['end_time'],
         my_colour=my_colour,
         my_result=my_result,

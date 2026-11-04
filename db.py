@@ -6,6 +6,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS games (
          url TEXT PRIMARY KEY,
          time_class TEXT,
+         time_control TEXT,
          my_colour TEXT,
          my_rating INTEGER,
          opponent_rating INTEGER,
@@ -16,7 +17,7 @@ def init_db():
     return conn
 
 def save_game(conn, game):
-    conn.execute('INSERT OR IGNORE INTO games VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                 (game.url, game.time_class, game.my_colour, game.my_rating,
+    conn.execute('INSERT OR IGNORE INTO games VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                 (game.url, game.time_class, game.time_control, game.my_colour, game.my_rating,
                    game.opponent_rating, game.my_result, game.end_time, game.opening))
     conn.commit()
