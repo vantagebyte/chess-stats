@@ -22,6 +22,17 @@ def results_by_time_class(conn):
     GROUP BY time_class
     ORDER BY COUNT(*) DESC''').fetchall()
 
+def results_by_opening(conn):
+    return conn.execute('''SELECT opening,
+           COUNT(*),
+           SUM(my_result = 'win'),
+           SUM(my_result = 'loss'),
+           SUM(my_result = 'draw')
+    FROM games
+    GROUP BY opening
+    ORDER BY COUNT(*) DESC
+    LIMIT 10''').fetchall()
+
 def results_by_time_control(conn):
     return conn.execute('''SELECT time_class, time_control,
     COUNT(*),
