@@ -58,5 +58,25 @@ def format_time_control(tc):
         minutes = int(tc) // 60
         return f'{minutes} min'
 
-        
-    
+def results_by_hour(conn):
+    return conn.execute('''SELECT
+               strftime('%H', end_time, 'unixepoch', 'localtime')
+               As hour, COUNT(*),
+               SUM(my_result = 'win'),
+               SUM(my_result = 'loss'),
+               SUM(my_result = 'draw')
+        FROM games       
+        GROUP BY hour
+        ORDER BY hour
+        ''').fetchall()
+
+def format_hour(hour):
+    h = int(hour)
+    if h == 0:
+        return '12am'
+    elif h < 12:
+        return f'{h}am'
+    elif h == 12:
+        return '12pm'
+    else:
+        return f'{h % 12}pm'

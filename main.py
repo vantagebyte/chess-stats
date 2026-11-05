@@ -6,7 +6,9 @@ from stats import (results_summary,
                    results_by_time_class, 
                    results_by_time_control, 
                    format_time_control,
-                   results_by_opening,)
+                   results_by_opening,
+                   results_by_hour,
+                   format_hour,)
 import time
 
 username = 'Voolfenborg'
@@ -28,16 +30,36 @@ for result, n in rows:
 
 print('\nBy colour:')
 for colour, total, wins, losses, draws in results_by_colour(conn):
-    print(f'{colour}: {total} games | {wins / total * 100:.1f}% W | {losses / total * 100:.1f}% L | {draws / total * 100:.1f}% D')
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    print(f'{colour:<6} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
 
 print('\nBy time class:')
-for time_class, total, wins, losses, draws in results_by_time_class(conn): 
-    print(f'{time_class}: {total} games | {wins / total * 100:.1f}% W | {losses / total * 100:.1f}% L | {draws / total * 100:.1f}% D')
+for time_class, total, wins, losses, draws in results_by_time_class(conn):
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    print(f'{time_class:<7} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
 
-print('\nBY time control:')
+print('\nBy time control:')
 for time_class, time_control, total, wins, losses, draws in results_by_time_control(conn):
-    print(f'{time_class} {format_time_control(time_control)}: {total} games | {wins / total * 100:.1f}% W | {losses / total * 100:.1f}% L | {draws / total * 100:.1f}% D')
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    label = f'{time_class} {format_time_control(time_control)}'
+    print(f'{label:<14} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
 
 print('\nTop openings:')
 for opening, total, wins, losses, draws in results_by_opening(conn):
-    print(f'{opening}: {total} games | {wins / total * 100:.1f}% W | {losses / total * 100:.1f}% L | {draws / total * 100:.1f}% D')
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    print(f'{opening:<46} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+
+print('\nBy hour:')
+for hour, total, wins, losses, draws in results_by_hour(conn):
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    print(f'{format_hour(hour):>4} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
