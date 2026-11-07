@@ -18,19 +18,27 @@ from display import (format_time_control,
                      format_hour,
                      print_row,
                      print_filtered,)
+from datetime import datetime, timezone
 import time
 
 username = 'Voolfenborg'
 conn = init_db()
 
 def update_games(conn):
+    before = conn.execute('SELECT COUNT(*) FROM games').fetchone()[0]
+    newest = conn.execute('SELECT MAX(end_time) FROM games').fetchone()[0]
+    start_month = datetime.fromtimestamp(newest, timezone.utc).strftime('%Y/%m')
     archives = get_archives(username)
     for month_url in archives:
+        if month_url[-7:] < start_month:
+            continue
         games = get_games(month_url)
         print(f'{month_url}: {len(games)} games')
         for game in games:
             save_game(conn, parse_game(game, username))
         time.sleep(1)
+    after = conn.execute('SELECT COUNT(*) FROM games').fetchone()[0]
+    print(f'{after - before} new games added')
         
 def ask(question):
     answer = input(question).strip().lower()
