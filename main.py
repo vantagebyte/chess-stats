@@ -15,7 +15,8 @@ from tilt import (load_games,
                   split_sittings, 
                   results_after,
                   results_by_streak,
-                  results_by_game_number,)
+                  results_by_game_number,
+                  longest_streaks,)
 import time
 
 username = 'Voolfenborg'
@@ -118,3 +119,10 @@ for n, outcomes in sorted(by_number.items()):
     length = '6+' if n == 6 else str(n)
     label = f'Game {length}'
     print(f'{label:<7} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+    
+    best = longest_streaks(sittings)
+
+print('\nLongest streaks (in one sitting):')
+print(f"Wins:    {best['win']}")
+print(f"Losses:  {best['loss']}")
+print(f"Winless: {best['winless']}")

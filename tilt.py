@@ -62,3 +62,28 @@ def results_by_game_number(sittings):
                 counts[key] = {'win': 0, 'loss': 0, 'draw': 0}
             counts[key][result] += 1
     return counts
+
+def longest_streaks(sittings):
+    best = {'win': 0, 'loss': 0, 'winless': 0}
+    for sitting in sittings:
+        win_run = 0
+        loss_run = 0
+        winless_run = 0
+        for result in sitting:
+            if result == 'win':
+                win_run += 1
+                loss_run = 0
+                winless_run = 0
+            elif result == 'loss':
+                win_run = 0
+                loss_run += 1
+                winless_run += 1
+                
+            else:
+                win_run = 0
+                loss_run = 0
+                winless_run += 1
+            best['win'] = max(best['win'], win_run)
+            best['loss'] = max(best['loss'], loss_run)
+            best['winless'] = max(best['winless'], winless_run)
+    return best
