@@ -1,22 +1,23 @@
-from models import (parse_game,
-                    get_start_time,)
+from models import parse_game
 from api import get_archives, get_games
 from db import init_db, save_game
-from stats import (results_summary, 
+from stats import (results_summary,
                    results_by_colour,
-                   results_by_time_class, 
-                   results_by_time_control, 
-                   format_time_control,
+                   results_by_time_class,
+                   results_by_time_control,
                    results_by_opening,
                    results_by_hour,
-                   format_hour,
-                  )
-from tilt import (load_games, 
-                  split_sittings, 
+                   filtered_results,)
+from tilt import (load_games,
+                  split_sittings,
                   results_after,
                   results_by_streak,
                   results_by_game_number,
                   longest_streaks,)
+from display import (format_time_control,
+                     format_hour,
+                     print_row,
+                     print_filtered,)
 import time
 
 username = 'Voolfenborg'
@@ -38,91 +39,57 @@ for result, n in rows:
 
 print('\nBy colour:')
 for colour, total, wins, losses, draws in results_by_colour(conn):
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
-    print(f'{colour:<6} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+    print_row(colour, total, wins, losses, draws, 6)
 
 print('\nBy time class:')
 for time_class, total, wins, losses, draws in results_by_time_class(conn):
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
-    print(f'{time_class:<7} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+    print_row(time_class, total, wins, losses, draws, 7)
 
 print('\nBy time control:')
 for time_class, time_control, total, wins, losses, draws in results_by_time_control(conn):
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
     label = f'{time_class} {format_time_control(time_control)}'
-    print(f'{label:<14} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+    print_row(label, total, wins, losses, draws, 14)
 
 print('\nTop openings:')
 for opening, total, wins, losses, draws in results_by_opening(conn):
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
-    print(f'{opening:<46} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+    print_row(opening, total, wins, losses, draws, 46)
 
 print('\nBy hour:')
 for hour, total, wins, losses, draws in results_by_hour(conn):
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
-    print(f'{format_hour(hour):>4} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
-
+    print_row(f'{format_hour(hour):>4}', total, wins, losses, draws, 4)
 
 games = load_games(conn)
 sittings = split_sittings(games)
-counts = results_after(sittings)
-print('\nTilt: result after...')
-for prev, outcomes in counts.items():
-    wins = outcomes['win']
-    losses = outcomes['loss']
-    draws = outcomes['draw']
-    total = wins + losses + draws
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
-    label = f'After a {prev}'
-    print(f'{label:<12} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
 
-streaks = results_by_streak(sittings)
+print('\nTilt: result after...')
+for prev, outcomes in results_after(sittings).items():
+    label = f'After a {prev}'
+    total = sum(outcomes.values())
+    print_row(label, total, outcomes['win'], outcomes['loss'], outcomes['draw'], 12)
 
 print('\nTilt: result after a streak...')
 PLURALS = {'win': 'wins', 'loss': 'losses'}
-for (streak_result, n), outcomes in sorted(streaks.items()):
-    wins = outcomes['win']
-    losses = outcomes['loss']
-    draws = outcomes['draw']
-    total = wins + losses + draws
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
+for (streak_result, n), outcomes in sorted(results_by_streak(sittings).items()):
     length = '3+' if n == 3 else str(n)
     word = streak_result if n == 1 else PLURALS[streak_result]
     label = f'After {length} {word}'
-    print(f'{label:<15} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
-    
-    by_number = results_by_game_number(sittings)
+    total = sum(outcomes.values())
+    print_row(label, total, outcomes['win'], outcomes['loss'], outcomes['draw'], 15)
 
 print('\nTilt: result by game number in a sitting...')
-for n, outcomes in sorted(by_number.items()):
-    wins = outcomes['win']
-    losses = outcomes['loss']
-    draws = outcomes['draw']
-    total = wins + losses + draws
-    win_pct = wins / total * 100
-    loss_pct = losses / total * 100
-    draw_pct = draws / total * 100
+for n, outcomes in sorted(results_by_game_number(sittings).items()):
     length = '6+' if n == 6 else str(n)
     label = f'Game {length}'
-    print(f'{label:<7} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
-    
-    best = longest_streaks(sittings)
+    total = sum(outcomes.values())
+    print_row(label, total, outcomes['win'], outcomes['loss'], outcomes['draw'], 7)
 
+best = longest_streaks(sittings)
 print('\nLongest streaks (in one sitting):')
 print(f"Wins:    {best['win']}")
 print(f"Losses:  {best['loss']}")
 print(f"Winless: {best['winless']}")
+
+print('\nFiltered:')
+print_filtered('London as White', filtered_results(conn, opening='London', colour='white'))
+print_filtered('London as White in Rapid', filtered_results(conn, opening='London', colour='white', time_class='rapid'))
+print_filtered('Bullet as Black', filtered_results(conn, colour='black', time_class='bullet'))
