@@ -20,3 +20,19 @@ def split_sittings(games):
         prev_end = end
     sittings.append(current)
     return sittings
+
+def results_after(sittings):
+    counts = {
+        'win':  {'win': 0, 'loss': 0, 'draw': 0},
+        'loss': {'win': 0, 'loss': 0, 'draw': 0},
+        'draw': {'win': 0, 'loss': 0, 'draw': 0},
+        }
+    for sitting in sittings:
+        prev = None
+        for result in sitting:
+            if prev is not None:
+                counts[prev][result] += 1
+            prev = result
+    return counts
+
+   

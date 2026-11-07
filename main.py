@@ -11,7 +11,7 @@ from stats import (results_summary,
                    results_by_hour,
                    format_hour,
                   )
-from tilt import load_games, split_sittings
+from tilt import load_games, split_sittings, results_after
 import time
 
 username = 'Voolfenborg'
@@ -70,5 +70,16 @@ for hour, total, wins, losses, draws in results_by_hour(conn):
 
 games = load_games(conn)
 sittings = split_sittings(games)
-print(len(sittings))
-print(sittings[:3])
+counts = results_after(sittings)
+print('\nTilt: result after...')
+for prev, outcomes in counts.items():
+    wins = outcomes['win']
+    losses = outcomes['loss']
+    draws = outcomes['draw']
+    total = wins + losses + draws
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    label = f'After a {prev}'
+    print(f'{label:<12} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+    
