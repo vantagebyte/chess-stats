@@ -52,3 +52,13 @@ def results_by_streak(sittings):
                 streak_result = result
                 streak_len = 1
     return counts
+
+def results_by_game_number(sittings):
+    counts = {}
+    for sitting in sittings:
+        for number, result in enumerate(sitting, 1):
+            key = min(number, 6)
+            if key not in counts:
+                counts[key] = {'win': 0, 'loss': 0, 'draw': 0}
+            counts[key][result] += 1
+    return counts

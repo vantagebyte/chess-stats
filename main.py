@@ -14,7 +14,8 @@ from stats import (results_summary,
 from tilt import (load_games, 
                   split_sittings, 
                   results_after,
-                  results_by_streak,)
+                  results_by_streak,
+                  results_by_game_number,)
 import time
 
 username = 'Voolfenborg'
@@ -102,3 +103,18 @@ for (streak_result, n), outcomes in sorted(streaks.items()):
     word = streak_result if n == 1 else PLURALS[streak_result]
     label = f'After {length} {word}'
     print(f'{label:<15} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+    
+    by_number = results_by_game_number(sittings)
+
+print('\nTilt: result by game number in a sitting...')
+for n, outcomes in sorted(by_number.items()):
+    wins = outcomes['win']
+    losses = outcomes['loss']
+    draws = outcomes['draw']
+    total = wins + losses + draws
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    length = '6+' if n == 6 else str(n)
+    label = f'Game {length}'
+    print(f'{label:<7} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
