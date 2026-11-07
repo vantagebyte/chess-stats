@@ -11,11 +11,14 @@ from stats import (results_summary,
                    results_by_hour,
                    format_hour,
                   )
-from tilt import load_games, split_sittings, results_after
+from tilt import (load_games, 
+                  split_sittings, 
+                  results_after,
+                  results_by_streak,)
 import time
 
 username = 'Voolfenborg'
-archives = get_archives(username)
+# archives = get_archives(username)
 
 conn = init_db()
 # for month_url in archives:
@@ -82,4 +85,20 @@ for prev, outcomes in counts.items():
     draw_pct = draws / total * 100
     label = f'After a {prev}'
     print(f'{label:<12} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
-    
+
+streaks = results_by_streak(sittings)
+
+print('\nTilt: result after a streak...')
+PLURALS = {'win': 'wins', 'loss': 'losses'}
+for (streak_result, n), outcomes in sorted(streaks.items()):
+    wins = outcomes['win']
+    losses = outcomes['loss']
+    draws = outcomes['draw']
+    total = wins + losses + draws
+    win_pct = wins / total * 100
+    loss_pct = losses / total * 100
+    draw_pct = draws / total * 100
+    length = '3+' if n == 3 else str(n)
+    word = streak_result if n == 1 else PLURALS[streak_result]
+    label = f'After {length} {word}'
+    print(f'{label:<15} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')

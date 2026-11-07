@@ -35,4 +35,20 @@ def results_after(sittings):
             prev = result
     return counts
 
-   
+def results_by_streak(sittings):
+    counts = {}
+    for sitting in sittings:
+        streak_result = None
+        streak_len = 0
+        for result in sitting:
+            if streak_result in ('win', 'loss'):
+                key = (streak_result, min(streak_len, 3))
+                if key not in counts:
+                    counts[key] = {'win': 0, 'loss': 0, 'draw': 0}
+                counts[key][result] += 1
+            if result == streak_result:
+                streak_len += 1
+            else:
+                streak_result = result
+                streak_len = 1
+    return counts
