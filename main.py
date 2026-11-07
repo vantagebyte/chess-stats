@@ -31,6 +31,12 @@ def update_games(conn):
         for game in games:
             save_game(conn, parse_game(game, username))
         time.sleep(1)
+        
+def ask(question):
+    answer = input(question).strip().lower()
+    if answer == '':
+        return None
+    return answer        
 
 def show_overview(conn):
     count = conn.execute('SELECT COUNT(*) FROM games').fetchone()
@@ -92,6 +98,15 @@ def show_tilt(conn):
     print(f"Wins:    {best['win']}")
     print(f"Losses:  {best['loss']}")
     print(f"Winless: {best['winless']}")
+    
+def show_filtered(conn):
+    colour = ask('Colour (white/black, Enter to skip): ')
+    time_class = ask('Time class (bullet/blitz/rapid, Enter to skip): ')
+    opening = ask('Opening (part of the name, Enter to skip): ')
+    row = filtered_results(conn, colour=colour, time_class=time_class, opening=opening)
+    print()
+    print_filtered('Result', row)
+        
 
 while True:
     print(f'\nChess Stats — {username}')
@@ -108,6 +123,8 @@ while True:
         show_overview(conn)
     elif choice == '3':
         show_tilt(conn)
+    elif choice == '4':
+        show_filtered(conn)
     elif choice == '0':
         break
     else:
