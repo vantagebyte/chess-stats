@@ -1,4 +1,5 @@
-from models import parse_game
+from models import (parse_game,
+                    get_start_time,)
 from api import get_archives, get_games
 from db import init_db, save_game
 from stats import (results_summary, 
@@ -8,19 +9,20 @@ from stats import (results_summary,
                    format_time_control,
                    results_by_opening,
                    results_by_hour,
-                   format_hour,)
+                   format_hour,
+                  )
 import time
 
 username = 'Voolfenborg'
-# archives = get_archives(username)
+archives = get_archives(username)
 
 conn = init_db()
-# for month_url in archives:
-#     games = get_games(month_url)
-#     print(f'{month_url}: {len(games)} games')
-#     for game in games:
-#         save_game(conn, parse_game(game, username))
-#     time.sleep(1)
+for month_url in archives:
+    games = get_games(month_url)
+    print(f'{month_url}: {len(games)} games')
+    for game in games:
+        save_game(conn, parse_game(game, username))
+    time.sleep(1)
 count = conn.execute('SELECT COUNT(*) FROM games').fetchone()
 print(f'Games in database: {count[0]}')
 rows = results_summary(conn)

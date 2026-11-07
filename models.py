@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 DRAW_RESULTS = ['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient']
 
@@ -11,6 +12,7 @@ class Game:
     my_rating: int
     opponent_rating: int
     my_result: str
+    start_time: int
     end_time: int
     opening: str
 
@@ -23,6 +25,19 @@ def clean_opening(name):
         else:
             kept.append(word)
     return ' '.join(kept)
+
+def get_start_time(pgn):
+    lines = pgn.split('\n')
+    for line in lines:
+        if line.startswith('[UTCDate'):
+            date = line.split('"')[1]
+        elif line.startswith('[UTCTime'):
+            time = line.split('"')[1]
+    text = f'{date} {time}'
+    start = datetime.strptime(text, '%Y.%m.%d %H:%M:%S')
+    start = start.replace(tzinfo=timezone.utc)
+    return int(start.timestamp())        
+
 
 def parse_game(game, username):
     if game['white']['username'].lower() == username.lower():
@@ -46,6 +61,7 @@ def parse_game(game, username):
         url=game['url'],
         time_class=game['time_class'],
         time_control=game['time_control'],
+        start_time=get_start_time(game['pgn']),
         end_time=game['end_time'],
         my_colour=my_colour,
         my_result=my_result,
