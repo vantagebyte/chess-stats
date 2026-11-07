@@ -11,18 +11,19 @@ from stats import (results_summary,
                    results_by_hour,
                    format_hour,
                   )
+from tilt import load_games, split_sittings
 import time
 
 username = 'Voolfenborg'
 archives = get_archives(username)
 
 conn = init_db()
-for month_url in archives:
-    games = get_games(month_url)
-    print(f'{month_url}: {len(games)} games')
-    for game in games:
-        save_game(conn, parse_game(game, username))
-    time.sleep(1)
+# for month_url in archives:
+#     games = get_games(month_url)
+#     print(f'{month_url}: {len(games)} games')
+#     for game in games:
+#         save_game(conn, parse_game(game, username))
+#     time.sleep(1)
 count = conn.execute('SELECT COUNT(*) FROM games').fetchone()
 print(f'Games in database: {count[0]}')
 rows = results_summary(conn)
@@ -65,3 +66,9 @@ for hour, total, wins, losses, draws in results_by_hour(conn):
     loss_pct = losses / total * 100
     draw_pct = draws / total * 100
     print(f'{format_hour(hour):>4} {total:>4} games | {win_pct:5.1f}% W | {loss_pct:5.1f}% L | {draw_pct:4.1f}% D')
+
+
+games = load_games(conn)
+sittings = split_sittings(games)
+print(len(sittings))
+print(sittings[:3])
